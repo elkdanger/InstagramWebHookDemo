@@ -12,19 +12,33 @@ namespace InstagramWebHookDemo.Api
     [RoutePrefix("api/instagram")]
     public class InstagramSubscriptionController : ApiController
     {
+        [Route("subscribe")]
         public async Task<IHttpActionResult> PostSubscribe()
         {
             var client = Dependencies.Client;
-            var sub = await client.SubscribeAsync(string.Empty, Url, "awesome");
+            System.Net.Http.Headers.CookieState authCookie = GetAuthCookie();
 
-            return Ok(sub);
+            if (authCookie != null)
+            {
+                var sub = await client.SubscribeAsync(authCookie.Value, Url, "awesome");
+
+                return Ok(sub);
+            }
+
+            return Unauthorized();
         }
 
         public async Task UnsubscribeAll()
         {
             var client = Dependencies.Client;
+            System.Net.Http.Headers.CookieState authCookie = GetAuthCookie();
 
-            await client.UnsubscribeAsync("");
+            await client.UnsubscribeAsync(authCookie.Value);
+        }
+
+        private System.Net.Http.Headers.CookieState GetAuthCookie()
+        {
+            return Request.Headers.GetCookies().FirstOrDefault()["insta_auth"];
         }
     }
 }
