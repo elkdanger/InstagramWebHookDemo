@@ -13,5 +13,7 @@ namespace InstagramWebHookDemo.Framework
         }
 
         public static InstagramWebHookClient Client { get { return client; } }
+
+        public static string InstagramAuthToken { get; set; }
     }
 }

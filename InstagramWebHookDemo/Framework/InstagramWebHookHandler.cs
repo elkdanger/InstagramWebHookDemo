@@ -15,6 +15,7 @@ namespace InstagramWebHookDemo.Framework
         {
             var client = Dependencies.Client;
             var notifications = context.GetDataOrDefault<IEnumerable<InstagramNotification>>();
+            var accessToken = Dependencies.InstagramAuthToken;
 
             return;
         }

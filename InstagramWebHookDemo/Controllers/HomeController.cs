@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using InstagramWebHookDemo.Framework;
 using InstaSharp;
 
 namespace InstagramWebHookDemo.Controllers
@@ -45,7 +46,7 @@ namespace InstagramWebHookDemo.Controllers
 
             FormsAuthentication.SetAuthCookie("steve", false);
 
-            Response.Cookies.Add(new HttpCookie("insta_auth", oauthResponse.AccessToken));
+            Dependencies.InstagramAuthToken = oauthResponse.AccessToken;
 
             return RedirectToAction("index");
         }

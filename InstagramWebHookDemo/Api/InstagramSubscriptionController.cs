@@ -16,29 +16,16 @@ namespace InstagramWebHookDemo.Api
         public async Task<IHttpActionResult> PostSubscribe()
         {
             var client = Dependencies.Client;
-            System.Net.Http.Headers.CookieState authCookie = GetAuthCookie();
+            var sub = await client.SubscribeAsync(string.Empty, Url, "awesome");
 
-            if (authCookie != null)
-            {
-                var sub = await client.SubscribeAsync(authCookie.Value, Url, "awesome");
-
-                return Ok(sub);
-            }
-
-            return Unauthorized();
+            return Ok(sub);
         }
 
         public async Task UnsubscribeAll()
         {
             var client = Dependencies.Client;
-            System.Net.Http.Headers.CookieState authCookie = GetAuthCookie();
 
-            await client.UnsubscribeAsync(authCookie.Value);
-        }
-
-        private System.Net.Http.Headers.CookieState GetAuthCookie()
-        {
-            return Request.Headers.GetCookies().FirstOrDefault()["insta_auth"];
+            await client.UnsubscribeAsync(string.Empty);
         }
     }
 }
