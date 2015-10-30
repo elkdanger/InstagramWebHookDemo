@@ -4,19 +4,30 @@
 
 <h1>Instagram Pics</h1>
 
-<div>
-    <button id="subscribe" class="btn btn-default">Subscribe</button>
-</div>
+<form action="/" method="post" class="form-horizontal">
+    
+    <div class="form-group">
+        <input type="text" id="tags" name="tags" class="form-control" placeholder="Enter some tags" />
+    </div>
+
+    <button type="submit" class="btn btn-default">Subscribe</button>
+</form>
 
 @section Scripts {
     <script>
-        $("#subscribe").click(function (e) {
+        $("form").submit(function (e) {
+           
             e.preventDefault()
 
             $.ajax({
                 type: 'post',
-                url: '/api/instagram/subscribe'
-            }).done(console.log)
+                url: '/api/instagram/subscribe',
+                data: JSON.stringify({ tags: $("#tags").val() }),
+                contentType: 'application/json'
+            }).done(function(result) {
+                console.log(result);
+                $('#tags').val('');
+            })
         })
     </script>
 }

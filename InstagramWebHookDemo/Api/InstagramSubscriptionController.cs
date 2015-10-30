@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using InstagramWebHookDemo.Framework;
+using InstagramWebHookDemo.Models;
 
 namespace InstagramWebHookDemo.Api
 {
@@ -13,12 +11,23 @@ namespace InstagramWebHookDemo.Api
     public class InstagramSubscriptionController : ApiController
     {
         [Route("subscribe")]
-        public async Task<IHttpActionResult> PostSubscribe()
+        [Authorize]
+        public async Task<IHttpActionResult> PostSubscribe(SubscribeRequest request)
         {
-            var client = Dependencies.Client;
-            var sub = await client.SubscribeAsync(string.Empty, Url, "awesome");
+            if (request == null)
+                return this.BadRequest("You must send a tag request");
 
-            return Ok(sub);
+            if (string.IsNullOrWhiteSpace(request.Tags))
+                return this.BadRequest("You must specify a tag");
+            
+            var client = Dependencies.Client;
+
+            var tasks = request.Tags.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                .Select(tag => Task.Run(() => client.SubscribeAsync(string.Empty, Url, tag)));
+
+            var subscriptions = await Task.WhenAll(tasks);
+
+            return Ok(subscriptions);
         }
 
         public async Task UnsubscribeAll()

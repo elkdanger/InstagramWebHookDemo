@@ -7,7 +7,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using InstagramWebHookDemo.Framework;
+using InstagramWebHookDemo.Models;
 using InstaSharp;
+using MongoDB.Driver;
 
 namespace InstagramWebHookDemo.Controllers
 {
@@ -27,7 +29,7 @@ namespace InstagramWebHookDemo.Controllers
 
         public ActionResult Login()
         {
-            var config = GetConfig();
+            var config = Dependencies.GetConfig(Request.Url);
 
             var scopes = new List<OAuth.Scope>();
             scopes.Add(InstaSharp.OAuth.Scope.Likes);
@@ -40,28 +42,37 @@ namespace InstagramWebHookDemo.Controllers
 
         public async Task<ActionResult> LoginCallback(string code)
         {
-            var config = GetConfig();
+            var config = Dependencies.GetConfig(Request.Url);
             var auth = new OAuth(config);
             var oauthResponse = await auth.RequestToken(code);
 
             FormsAuthentication.SetAuthCookie("steve", false);
 
+            // Save the token to Mongo
+            var repo = new UserRepository();
+            var user = await repo.GetUser("steve");
+
+            if (user == null)
+            {
+                user = new UserInfo
+                {
+                    Username = "steve",
+                    InstagramAccessToken = oauthResponse.AccessToken
+                };
+
+                await repo.InsertUser(user);
+            }
+            else
+            {
+                var update = Builders<UserInfo>.Update
+                    .Set(u => u.InstagramAccessToken, oauthResponse.AccessToken);
+
+                await repo.Collection.UpdateOneAsync(u => u.Username == "steve", update);
+            }
+
             Dependencies.InstagramAuthToken = oauthResponse.AccessToken;
 
             return RedirectToAction("index");
-        }
-
-        private InstagramConfig GetConfig()
-        {
-            var url = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host +
-                (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
-
-            var config = new InstagramConfig(
-                ConfigurationManager.AppSettings["MS_WebHookReceiverSecret_InstagramId"],
-                ConfigurationManager.AppSettings["MS_WebHookReceiverSecret_Instagram"],
-                $"{url}/home/loginCallback");
-
-            return config;
-        }
+        }        
     }
 }
