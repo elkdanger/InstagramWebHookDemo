@@ -13,6 +13,19 @@
     <button type="submit" class="btn btn-default">Subscribe</button>
 </form>
 
+<h2>Images</h2>
+
+<div id="images"></div>
+
+<script id="imageTemplate" type="text/template">
+
+    <div>
+        <img src="{{imageUri}}" />
+        <p><strong>{{user}}</strong>: {{caption}}</p>
+    </div>
+
+</script>
+
 @section Scripts {
     <script>
         $("form").submit(function (e) {
@@ -29,5 +42,8 @@
                 $('#tags').val('');
             })
         })
+
+
+
     </script>
 }

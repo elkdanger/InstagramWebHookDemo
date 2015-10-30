@@ -4,11 +4,17 @@ using InstagramWebHookDemo.Models;
 using Microsoft.AspNet.WebHooks;
 using InstaSharp;
 using System.Linq;
+using Microsoft.AspNet.SignalR;
+using System;
+using InstagramWebHookDemo.Hubs;
 
 namespace InstagramWebHookDemo.Framework
 {
     public class InstagramWebHookHandler : WebHookHandler
     {
+        private static Lazy<IHubContext> hubContext = new Lazy<IHubContext>(() =>
+            GlobalHost.ConnectionManager.GetHubContext<InstagramImageHub>());
+
         public InstagramWebHookHandler()
         {
             this.Receiver = "instagram";
@@ -33,6 +39,11 @@ namespace InstagramWebHookDemo.Framework
             });
 
             var result = await media.Recent(notifications.First().ObjectId);
+
+            foreach (var image in result.Data)
+            {
+                hubContext.Value.Clients.All.showImage(image.Images.LowResolution, image.User.Username, image.Caption.Text);
+            }
             
             return;
         }

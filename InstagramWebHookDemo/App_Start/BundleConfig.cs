@@ -26,6 +26,9 @@ namespace InstagramWebHookDemo
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/signalr").Include(
+                    "~/scripts/jquery.signalR-2.2.0.js"));
         }
     }
 }
