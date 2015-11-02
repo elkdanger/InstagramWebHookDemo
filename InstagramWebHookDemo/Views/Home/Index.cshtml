@@ -5,12 +5,12 @@
 <h1>Instagram Pics</h1>
 
 <form action="/" method="post" class="form-horizontal">
-    
+
     <div class="form-group">
         <input type="text" id="tags" name="tags" class="form-control" placeholder="Enter some tags" />
+        <button type="submit" class="btn btn-default">Subscribe</button>
     </div>
 
-    <button type="submit" class="btn btn-default">Subscribe</button>
 </form>
 
 <h2>Images</h2>
@@ -28,6 +28,17 @@
 
 @section Scripts {
     <script>
+
+        var imageHub = $.connection.imageHub
+
+        imageHub.client.showImage = function (imageUri, user, caption) {
+            console.log('Image received: ' + imageUri)
+        }
+
+        $.connection.hub.start().done(function(result) {
+            console.log('Hub started')
+        })
+
         $("form").submit(function (e) {
            
             e.preventDefault()
