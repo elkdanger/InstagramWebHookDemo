@@ -42,7 +42,7 @@ namespace InstagramWebHookDemo.Framework
 
             foreach (var image in result.Data)
             {
-                hubContext.Value.Clients.All.showImage(image.Images.LowResolution, image.User.Username, image.Caption.Text);
+                hubContext.Value.Clients.All.showImage(image.Images.LowResolution.Url, image.User.Username, image.Caption.Text);
             }
             
             return;

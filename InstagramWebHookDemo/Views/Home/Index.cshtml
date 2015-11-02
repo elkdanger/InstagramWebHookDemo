@@ -32,7 +32,18 @@
         var imageHub = $.connection.imageHub
 
         imageHub.client.showImage = function (imageUri, user, caption) {
-            console.log('Image received: ' + imageUri)
+            var img = $('<img>').attr('src', imageUri)
+            var description = $('<p>')
+                .append($('<strong>').text(user))
+                .text(caption)
+
+            var container = $('<div>')
+                .append(img)
+                .append(description)
+                .prependTo($('#images'))
+                .hide()
+
+            container.fadeIn(350)
         }
 
         $.connection.hub.start().done(function(result) {
