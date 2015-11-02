@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using InstagramWebHookDemo.Models;
-using Microsoft.AspNet.WebHooks;
-using InstaSharp;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNet.SignalR;
-using System;
+using System.Threading.Tasks;
 using InstagramWebHookDemo.Hubs;
+using InstagramWebHookDemo.Models;
+using InstaSharp.Endpoints;
+using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.WebHooks;
 
 namespace InstagramWebHookDemo.Framework
 {
@@ -29,7 +29,7 @@ namespace InstagramWebHookDemo.Framework
             var user = await repo.GetUser("steve");
             var config = Dependencies.GetConfig(context.Request.RequestUri);
 
-            var media = new InstaSharp.Endpoints.Tags(config, new InstaSharp.Models.Responses.OAuthResponse
+            var media = new Tags(config, new InstaSharp.Models.Responses.OAuthResponse
             {
                 AccessToken = user.InstagramAccessToken,
                 User = new InstaSharp.Models.UserInfo
